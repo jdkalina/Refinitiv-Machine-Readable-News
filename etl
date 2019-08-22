@@ -1,0 +1,12 @@
+import pandas as pd
+import tickFiles as trth
+
+outputFiles = []
+fls = findFiles(fileDir = /home/josh/Documents/mrn/')
+db = to_dataframe(fls)
+db = filter_output(db)
+tk = trth.generateToken()
+for i,v in db.iterrows():
+    rU,rH,rB = trth.generateRequestBody(token=tk,dataframe=db,index=0)
+    f = trth.generateFiles(token = tk, requestUrl=rU,requestHeaders=rH,requestBody=rB, iterator = i)
+    outputFiles.append(f)
