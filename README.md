@@ -7,4 +7,4 @@ Next processing and transforming of the files is done within the mrnProcessing.p
 
 That output is passed to the tickFiles.py methods which query Refinitiv's historical Tick REST api for the intraday updates on RICS (Reuters Instrument Codes).
 
-That output is then paired with the chartingOutput.py methods to create charts for each breaking Reuters exclusive.
+That output is then paired with the chartingOutput.py methods to create charts for each breaking Reuters exclusive. An example of the output is shown in picture0.jpg.
