@@ -1,13 +1,25 @@
+def show(dataframe):
+    for i in dataframe.columns:
+        print("\n'", i, "'\ncolumn position: [",dataframe.columns.get_loc(i),' of ', len(dataframe.columns) - 1,']\n', type(dataframe.iloc[0][i]))
+        print(dataframe[i].head())
+
 def findFiles(fileDir = '/home/josh/Documents/mrnfiles/'):
     files = os.listdir(fileDir)
     mrnFiles = []
     for file in files:
         x = os.listdir(fileDir + file)
         for i in x:
-            mrnFiles.append(fileDir + file + '\\' + i)
+            mrnFiles.append(fileDir + file + '/' + i)
     return mrnFiles
 
-def to_dataframe(mrnFiles , filter56 = True):
+def to_dataframe(mrnFiles , filter56 = True, sequence_filter = True):
+    """
+
+    :param mrnFiles: This is a list of files with paths to the MRN files meant to download.
+    :param filter56: This is a True/False Flag on whether the output should be filtered for contentFlag == '56'
+    :param sequence_filter: This is a True/False flag on whether the output should be filtered to sequence == 1.
+    :return: returns a concatenated dataframe from a list of MRN Headline Direct files, which are themselves json files.
+    """
     timestamp = []
     contentFlags = []
     coIds = []
@@ -46,10 +58,13 @@ def to_dataframe(mrnFiles , filter56 = True):
     output = pd.DataFrame(data={'timestamp':timestamp, 'contentFlags':contentFlags,'coIds':coIds,'headline':headline, 'takeSequence':takeSequence, 'messageType':messageType, 'subjects':subjects, 'firstCreated':firstCreated})
     if filter56:
         output = output[output['contentFlags'] == '56']
+    if sequence_filter:
+        output = output[output['takeSequence'] == 1]
     return output
 
-def filter_output(dataframe, time_column_name = 'timestamp',starttime = '11:30:00', endtime = '20:15:00'):
+def filter_timerange(dataframe, time_column_name = 'timestamp',starttime = '11:30:00', endtime = '20:15:00'):
     """
+    This is an additional filter to select just mrn headline events that occur during the US trading hours.
 
     :param df: a PANDAS dataframe.
     :param starttime: Format should be '%H:%M:%S'. Note the MRN times are in GMT, so this time should be rationalized to GMT.
@@ -60,8 +75,3 @@ def filter_output(dataframe, time_column_name = 'timestamp',starttime = '11:30:0
     dataframe = dataframe.between_time(starttime,endtime)
     dataframe.reset_index(inplace=True,drop=True)
     return dataframe
- 
-if __name__ == '__main__':
-    files = findFiles()
-    df = to_dataframe(files)
-    df = filter_output(df)
